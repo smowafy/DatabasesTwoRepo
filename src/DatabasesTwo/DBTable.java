@@ -11,5 +11,14 @@ public class DBTable {
 	private  String keyColName;
 	private  Hashtable<String, String>colNameType;
 	private  Hashtable<String, String>colNameRef;
+
+	public DBTable(String strTableName, Hashtable<String,String> htblColNameType, Hashtable<String,String>htblColNameRefs, String strKeyColName) {
+		this.tableName = strTableName;
+		this.keyColName = strKeyColName;
+		this.htblColNameType = htblColNameType;
+		this.colNameRef = htblColNameRefs;
+		this.pageCount = 1;
+		this.pageList.add(new Page(this.tableName));
+	}
 	
 }
