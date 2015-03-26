@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.Set;
+import java.util.HashSet;
 
 public class DBApp {
 	final String COMMA = ",";
@@ -69,6 +71,34 @@ public class DBApp {
 			(new File(oldFileName)).delete();
 			File newFile = new File(tempFileName);
 			newFile.renameTo(oldFile);
+
+			//end of writing to metadata.CSV file
+			//beginning of creating the index and adding it to the table
+			BTree<String, DBRecord> idxBTree = new BTree();
+			DBTable targetTable;
+			//TODO add linear hashtable
+
+			for(DBTable tmpTable : tables) {
+				if (tmpTable.tableName.equals(strTableName)) {
+					targetTable = tmpTable;
+					tmpTable.colNameBTree.put(strColName, idxBtree);
+					//TODO add linear hashtable
+					break;
+				}
+			}
+
+			//start inserting values from the table pages into the B+ Tree
+			for(Page tmpPage : targetTable.pageList) {
+				for(int i = 0; i < tmpPage.recCount; i++) {
+					DBRecord tmpRecord = tmpPage.recordList.get(i);
+					idxBtree.insert(tmpRecord.recValue.get(strColName), tmpRecord);
+				}
+			}
+			//End of inserting into B+ Tree
+
+			//TODO add same values to linear hashtable
+
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,8 +108,37 @@ public class DBApp {
 
 	public void insertIntoTable(String strTableName,
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
-
+		
+		//Begin inserting new record into the table
+		DBTable targetTable;
+		for(targetTable : tables) {
+			if (targetTable.tableName.equals(strTableName)) break;
+		}
+		DBRecord toBeAddedRecord = new DBRecord(htblColNameValue);
+		Page lastPage = targetTable.pageList.get(targetTable.pageList.size() - 1);
+		if (lastPage.recCount < lastPage.maxRecCount) {
+			lastPage.recCount++;
+		} else {
+			Page newPage = new Page(strTableName);
+			newPage.recCount++;
+			newPage.recordList.add(toBeAddedRecord);
+			targetTable.pageCount++;
+			targetTable.pageList.add(newPage);
+		}
+		//End inserting new record into the table
+		//Begin inserting new entry into the column indices
+		Set<String> keys = htblColNameValue.keySet();
+		BTree tmpIdx;
+		for(String key : keys) {
+			tmpIdx = targetTable.colNameBTree.get(key);
+			if (tmpIdx != null) {
+				tmpIdx.insert(htblColNameValue.get(key), toBeAddedRecord);
+			}
+		}
+		//End inserting new entry into the column indices
+		//TODO inserting new entry into Linear Hashtable
 	}
+
 
 	public void deleteFromTable(String strTableName,
 			Hashtable<String, String> htblColNameValue, String strOperator)
@@ -97,7 +156,36 @@ public class DBApp {
 	public Iterator selectRangeFromTable(String strTable,
 			Hashtable<String, String> htblColNameRange, String strOperator)
 			throws DBEngineException {
-		return null;
+		//fetching table reference
+		DBTable targetTable;		
+		for(targetTable : tables) {
+			if (targetTable.tableName.equals(strTable)) break;
+		}
+
+		//Begin collecting each query result separately before using the operator
+		ArrayList<HashSet<DBRecord> > queryList = new ArrayList<HashSet>();
+		Set<String> keys = htblColNameRange.keySet();
+		StringTokenizer strTok;
+		for(String colName:keys) {
+			String queryRange = htblColNameRange.get(colName);
+			strTok = new StringTokenizer(queryRange, COMMA);
+			String rangeStart = strTok.nextToken();
+			String rangeEnd = strTok.nextToken();
+			BTree tmpIdx = targetTable.colNameBTree.get(colName);
+			DBRecord queryResultRecord;
+			if (tmpIdx != null) {
+				queryResultRecord = tmpIdx.search(rangeStart);
+			} else {
+				queryResultRecord = linearSearch(targetTable, colName, rangeStart);
+			}
+			HashSet<DBRecord> tmpRecordHashSet = new HashSet<DBRecord>();
+			//! --
+				tmpRecordHashSet.insert(queryResultRecord);
+			// --!
+				queryList.add(tmpRecordHashSet);
+		}
+		return evaluateQueryWithOperator(queryList, strOperator);
+
 
 	}
 
@@ -140,4 +228,20 @@ public class DBApp {
 
 		}
 	}
+
+	public DBRecord linearSearch(DBTable inputTable, String colName, String colValue) {
+		for(Page page : inputTable.pageList) {
+			for(DBRecord record : page.recordList) {
+				if (record.recValue.get(colName).equals(colValue)) return record;
+			}
+		}
+	}
+
+	public Iterator evaluateQueryWithOperator(ArrayList<HashSet<DBRecord> > arr, String operator) {
+		return null;
+		//TODO write method body
+	}
+
+
+
 }

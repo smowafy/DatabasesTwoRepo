@@ -5,13 +5,16 @@ import java.util.ArrayList;
 
 public class Page implements Serializable{
 
-	private static final long serialVersionUID = 1L;
-	private static int maxRecCount;
-	private String tableName;
-	private ArrayList<DBRecord> recordList;
+	public static final long serialVersionUID = 1L;
+	public static int maxRecCount;
+	public int recCount;
+	public String tableName;
+	public ArrayList<DBRecord> recordList;
 	
 	public Page(String tableName) {
 		this.tableName = tableName;
+		recCount = 0;
+		recordList = new ArrayList<DBRecord>();
 	}
 		
 }
