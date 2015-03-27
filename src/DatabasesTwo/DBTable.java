@@ -23,6 +23,9 @@ public class DBTable {
 		this.colNameType = htblColNameType;
 		this.colNameRef = htblColNameRefs;
 		this.pageCount = 1;
+		pageList = new ArrayList<Page>();
+		colList = new ArrayList<String>();
+		colNameBTree = new Hashtable<String, BTree<String,DBRecord>>();
 		this.pageList.add(new Page(this.tableName));
 	}
 	

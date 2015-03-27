@@ -1,0 +1,2 @@
+Person,address,string,False,True,null
+Person,name,string,True,True,null
