@@ -26,7 +26,7 @@ import java.util.Set;
  * @author  mohamed
  */
 //public class LinearHashTable implements Map<DataType, DataType> {
-public class LinearHashTable implements Map<String, DBRecord> {
+public class LinearHashTable implements Map<TKey extends Comparable<TKey>, TValue> {
 
 	/**
      * @uml.property  name="loadFactor"
@@ -85,11 +85,11 @@ public class LinearHashTable implements Map<String, DBRecord> {
 	}
 
 	@Override
-	public boolean containsKey(Object key) {
+	public boolean containsKey(TKey key) {
 		return getEntry(key) != null;
 	}
 
-	private LHTEntry getEntry(Object key) {
+	private LHTEntry getEntry(TKey key) {
 		//if (key instanceof DataType){
 			//int b = getBucket((DataType)key);
 			int b = getBucket(key);
@@ -102,18 +102,18 @@ public class LinearHashTable implements Map<String, DBRecord> {
 	}
 
 	@Override
-	public boolean containsValue(Object value) {
+	public boolean containsValue(TValue value) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public DataType get(Object key) {
+	public TKey get(TKey key) {
 		LHTEntry entry = getEntry(key);
 		return null == entry ? null : entry.getValue();
 	}
 
-	public int getBucket(DataType key){
+	public int getBucket(TKey key){
 		int hash = hash(key);
 		int bits = hash & ((int)Math.pow(2, digits)-1);
 		if(bits <= size){
@@ -125,7 +125,7 @@ public class LinearHashTable implements Map<String, DBRecord> {
 	}
 
 	@Override
-	public DataType put(DataType key, DataType value) {
+	public TKey put(TKey key, TValue value) {
 		int b = getBucket(key);
 		Bucket bucket = buckets.get(b);
 		int hash = hash(key);
@@ -157,8 +157,8 @@ public class LinearHashTable implements Map<String, DBRecord> {
     public int hashCode() {
         return super.hashCode();
     }
-
-    final int hash(Object k) {
+//final int hash(Object k) {
+    final int hash(TKey k) {
 		int h = hashSeed;
 		h ^= k.hashCode();
 		h ^= (h >>> 20) ^ (h >>> 12);
@@ -166,16 +166,20 @@ public class LinearHashTable implements Map<String, DBRecord> {
 	}
 
 	@Override
-	public DataType remove(Object key) {
-		int b = getBucket((DataType)key);
+	public TValue remove(TKey key) {
+		int b = getBucket(key);
 		Bucket bucket = buckets.get(b);
-		LHTEntry entry = bucket.remove((DataType)key);
+		LHTEntry entry = bucket.remove(key);
 		numberOfItems--;
 		return entry.value;
 	}
 
 	@Override
-	public void putAll(Map<? extends DataType, ? extends DataType> m) {
+	//public void putAll(Map<? extends DataType, ? extends DataType> m) {
+		// TODO Auto-generated method stub
+
+	//}
+	public void putAll(Map<TKey, TValue> m) {
 		// TODO Auto-generated method stub
 
 	}
@@ -187,19 +191,20 @@ public class LinearHashTable implements Map<String, DBRecord> {
 	}
 
 	@Override
-	public Set<DataType> keySet() {
+	public Set<TKey> keySet() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<DataType> values() {
+	public Collection<TValue> values() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<Entry<DataType, DataType>> entrySet() {
+	//public Set<DataType, DataType>> entrySet() {
+	public Set<Entry<TKey, TValue>> entrySet() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -221,7 +226,7 @@ public class LinearHashTable implements Map<String, DBRecord> {
 			lastItem = 0;
 		}
 		
-		public LHTEntry remove(DataType key) {
+		public LHTEntry remove(TKey key) {
 			LHTEntry r = null;
 			for (int i = 0; i < lastItem; i++) {
 				if(entries[i].getKey().equals(key)){
@@ -254,9 +259,10 @@ public class LinearHashTable implements Map<String, DBRecord> {
 			return r;
 		}
 
-		public LHTEntry getEntry(Object key) {
+		public LHTEntry getEntry(TKey key) {
 			for (int i = 0; i < lastItem; i++) {
-				DataType dataKey = (DataType) key;
+				//DataType dataKey = (DataType) key;
+				TKey dataKey =  key;
 				if(entries[i].getKey().equals(dataKey)){
 					return entries[i];
 				}
@@ -264,7 +270,7 @@ public class LinearHashTable implements Map<String, DBRecord> {
 			return null;
 		}
 
-		public void put(DataType key, DataType value, int hash) {
+		public void put(TKey key, TValue value, int hash) {
 			if(lastItem == entries.length){
 				overflow.add(new LHTEntry(key, value, hash));
 			}else{
@@ -305,20 +311,20 @@ public class LinearHashTable implements Map<String, DBRecord> {
 	/**
      * @author   mohamed
      */
-	class LHTEntry implements Entry<DataType, DataType>{
+	class LHTEntry implements Entry<TKey, TValue>{
 		/**
          * @uml.property  name="key"
          * @uml.associationEnd  
          */
-		private DataType key;
+		private TKey key;
 		/**
          * @uml.property  name="value"
          * @uml.associationEnd  
          */
-		private DataType value;
+		private TValue value;
         private int hash;
 
-		public LHTEntry(DataType key, DataType value, int hash) {
+		public LHTEntry(TKey key, TValue value, int hash) {
 			this.key = key;
 			this.value = value;
             this.hash = hash;
@@ -328,7 +334,7 @@ public class LinearHashTable implements Map<String, DBRecord> {
          * @return
          * @uml.property  name="value"
          */
-		public DataType getValue(){
+		public TValue getValue(){
 			return value;
 		}
 
@@ -337,7 +343,7 @@ public class LinearHashTable implements Map<String, DBRecord> {
          * @uml.property  name="key"
          */
 		@Override
-		public DataType getKey() {
+		public TKey getKey() {
 			return key;
 		}
 
@@ -347,8 +353,8 @@ public class LinearHashTable implements Map<String, DBRecord> {
          * @uml.property  name="value"
          */
 		@Override
-		public DataType setValue(DataType value) {
-			DataType old = this.value;
+		public TValue setValue(TValue value) {
+			TValue old = this.value;
 			this.value = value;
 			return old;
 		}
