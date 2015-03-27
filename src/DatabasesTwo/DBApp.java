@@ -162,7 +162,31 @@ public class DBApp {
 	public Iterator selectValueFromTable(String strTable,
 			Hashtable<String, String> htblColNameValue, String strOperator)
 			throws DBEngineException {
-		return null;
+		
+
+		DBTable targetTable = null;		
+		for(DBTable tmpTable : tables) {
+			if (tmpTable.tableName.equals(strTable)) {
+				targetTable = tmpTable;
+				break;
+			}
+		}
+		ArrayList<Iterator> queryList = new ArrayList<Iterator>();
+		Set<String> keys = htblColNameValue.keySet();
+		for(String colName:keys){
+			String exactValue = htblColNameValue.get(colName);
+			LinearHashTable<String, DBRecord> tmpIdx = targetTable.colNameHash.get(colName);
+			DBRecord queryResultRecord;
+			if (tmpIdx != null) {
+				queryResultRecord = (DBRecord) ((tmpIdx.getEntry(exactValue)).getValue());
+			} else {
+				queryResultRecord = linearSearch(targetTable, colName, rangeStart);
+			}
+			HashSet<DBRecord> tmpRecordHashSet = new HashSet<DBRecord>();
+			tmpRecordHashSet.add(queryResultRecord);
+			queryList.add(tmpRecordHashSet);
+		}
+
 
 	}
 
