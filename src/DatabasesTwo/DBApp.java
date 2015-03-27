@@ -81,11 +81,13 @@ public class DBApp {
 			BTree<String, DBRecord> idxBTree = new BTree<>();
 			DBTable targetTable = null;
 			//TODO add linear hashtable
+			LinearHashTable idxHashing = new LinearHashTable(0.8f,4);
 
 			for(DBTable tmpTable : tables) {
 				if (tmpTable.tableName.equals(strTableName)) {
 					targetTable = tmpTable;
 					tmpTable.colNameBTree.put(strColName, idxBTree);
+					tmpTable.colNameHash.put(strColName, idxHashing);
 					//TODO add linear hashtable
 					break;
 				}
@@ -96,6 +98,7 @@ public class DBApp {
 				for(int i = 0; i < tmpPage.recCount; i++) {
 					DBRecord tmpRecord = tmpPage.recordList.get(i);
 					idxBTree.insert(tmpRecord.recValue.get(strColName), tmpRecord);
+					idxHashing.insert(tmpRecord.recValue.get(strColName), tmpRecord);
 				}
 			}
 			//End of inserting into B+ Tree
@@ -136,10 +139,13 @@ public class DBApp {
 		//Begin inserting new entry into the column indices
 		Set<String> keys = htblColNameValue.keySet();
 		BTree tmpIdx;
+		LinearHashTable htmpIdx;
 		for(String key : keys) {
 			tmpIdx = targetTable.colNameBTree.get(key);
+			htmpIdx = targetTable.colNameHash.get(key);
 			if (tmpIdx != null) {
 				tmpIdx.insert(htblColNameValue.get(key), toBeAddedRecord);
+				htmpIdx.insert(htblColNameValue.get(key), toBeAddedRecord);
 			}
 		}
 		//End inserting new entry into the column indices

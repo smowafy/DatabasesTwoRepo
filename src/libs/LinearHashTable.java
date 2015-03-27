@@ -11,8 +11,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package libs;
 
-import dataTypes.DataType;
+//import dataTypes.DataType;
 
+import DatabasesTwo.DBRecord
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,7 +25,8 @@ import java.util.Set;
 /**
  * @author  mohamed
  */
-public class LinearHashTable implements Map<DataType, DataType> {
+//public class LinearHashTable implements Map<DataType, DataType> {
+public class LinearHashTable implements Map<String, DBRecord> {
 
 	/**
      * @uml.property  name="loadFactor"
@@ -88,13 +90,14 @@ public class LinearHashTable implements Map<DataType, DataType> {
 	}
 
 	private LHTEntry getEntry(Object key) {
-		if (key instanceof DataType){
-			int b = getBucket((DataType)key);
+		//if (key instanceof DataType){
+			//int b = getBucket((DataType)key);
+			int b = getBucket(key);
 			Bucket bucket = buckets.get(b);
 			LHTEntry entry;
             entry = bucket.getEntry(key);
             return entry;
-		}
+		//}
 		return null;
 	}
 

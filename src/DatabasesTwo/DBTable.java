@@ -16,6 +16,7 @@ public class DBTable {
 	public  Hashtable<String, String>colNameType;
 	public  Hashtable<String, String>colNameRef;
 	public  Hashtable<String, BTree<String, DBRecord> > colNameBTree;
+	public Hashtable<String, LinearHashtable<String, DBRecord>> colNameHash;
 
 	public DBTable(String strTableName, Hashtable<String,String> htblColNameType, Hashtable<String,String>htblColNameRefs, String strKeyColName) {
 		this.tableName = strTableName;
