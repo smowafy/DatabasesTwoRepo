@@ -1,6 +1,10 @@
 package libs;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import DatabasesTwo.DBIterator;
+import DatabasesTwo.DBRecord;
 
 
 /*
@@ -61,6 +65,16 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 		
 		int index = leaf.search(key);
 		return (index == -1) ? null : leaf.getValue(index);
+	}
+	
+	public BTreeLeafNode<TKey, TValue> searchNode(TKey key) {
+		return this.findLeafNodeShouldContainKey(key);
+	}
+	
+	public Iterator searchRange(TKey start, TKey end) {
+		BTreeLeafNode<String, DBRecord> startNode = (BTreeLeafNode<String, DBRecord>) searchNode(start);
+		DBIterator it = new DBIterator((String)start, (String)end, startNode);
+		return it;
 	}
 	
 	/**

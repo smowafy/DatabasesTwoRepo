@@ -159,6 +159,12 @@ abstract class BTreeNode<TKey extends Comparable<TKey>> {
 			return this.rightSibling;
 		return null;
 	}
+	
+	public BTreeNode<TKey> getNextNodeforDB() {
+		if (this.rightSibling != null) return this.rightSibling;
+		return null;
+	}
+	
 
 	public void setRightSibling(BTreeNode<TKey> silbling) {
 		this.rightSibling = silbling;

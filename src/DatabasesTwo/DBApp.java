@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Set;
 import java.util.HashSet;
@@ -135,7 +137,7 @@ public class DBApp {
 		//End inserting new record into the table
 		//Begin inserting new entry into the column indices
 		Set<String> keys = htblColNameValue.keySet();
-		BTree tmpIdx;
+		BTree<String, DBRecord> tmpIdx;
 		for(String key : keys) {
 			tmpIdx = targetTable.colNameBTree.get(key);
 			if (tmpIdx != null) {
@@ -173,7 +175,7 @@ public class DBApp {
 		}
 
 		//Begin collecting each query result separately before using the operator
-		ArrayList<HashSet<DBRecord> > queryList = new ArrayList<HashSet<DBRecord> >();
+		ArrayList<Iterator> queryList = new ArrayList<Iterator>();
 		Set<String> keys = htblColNameRange.keySet();
 		StringTokenizer strTok;
 		for(String colName:keys) {
@@ -182,18 +184,15 @@ public class DBApp {
 			String rangeStart = strTok.nextToken();
 			String rangeEnd = strTok.nextToken();
 			BTree<String, DBRecord> tmpIdx = targetTable.colNameBTree.get(colName);
-			DBRecord queryResultRecord;
+			Iterator queryResultRecordIter;
 			if (tmpIdx != null) {
-				queryResultRecord = (DBRecord) tmpIdx.search(rangeStart);
+				queryResultRecordIter = tmpIdx.searchRange(rangeStart, rangeEnd);
 			} else {
-				queryResultRecord = linearSearch(targetTable, colName, rangeStart);
+				queryResultRecordIter = linearSearch(targetTable, colName, rangeStart, rangeEnd);
 			}
-			HashSet<DBRecord> tmpRecordHashSet = new HashSet<DBRecord>();
-			tmpRecordHashSet.add(queryResultRecord);
-			queryList.add(tmpRecordHashSet);
+			queryList.add(queryResultRecordIter);
 		}
 		return evaluateQueryWithOperator(queryList, strOperator);
-
 
 	}
 
@@ -237,17 +236,52 @@ public class DBApp {
 		}
 	}
 
-	public DBRecord linearSearch(DBTable inputTable, String colName, String colValue) {
+	public Iterator linearSearch(DBTable inputTable, String colName, String colStart, String colEnd) {
+		List li = new LinkedList<DBRecord>();
 		for(Page page : inputTable.pageList) {
 			for(DBRecord record : page.recordList) {
-				if (record.recValue.get(colName).equals(colValue)) return record;
+				if (record.recValue.get(colName).compareTo(colStart) >= 0 && record.recValue.get(colName).compareTo(colEnd) <= 0) li.add(record);
 			}
 		}
-		return null;
+		return li.iterator();
 	}
 
-	public Iterator evaluateQueryWithOperator(ArrayList<HashSet<DBRecord> > arr, String operator) {
-		return null;
+	public Iterator evaluateQueryWithOperator(ArrayList<Iterator> arr, String operator) {
+		if (operator.equals("OR")) {
+			HashSet<DBRecord> st = new HashSet<DBRecord>();
+			for(Iterator it : arr) {
+				while (it.hasNext()) {
+					st.add((DBRecord)it.next());
+				}
+			}
+			return st.iterator();
+		} else {
+			ArrayList<ArrayList<DBRecord>> tmpArr = new ArrayList<ArrayList<DBRecord>>();
+			for(Iterator it : arr) {
+				tmpArr.add(new ArrayList<DBRecord>());
+				while (it.hasNext()) {
+					tmpArr.get(tmpArr.size()-1).add((DBRecord) it.next());
+				}
+			}
+			HashSet<DBRecord> st = new HashSet<DBRecord>();
+			for(DBRecord tmpRec : tmpArr.get(0)) {
+				int cntFound = 0;
+				for(int i = 1; i < tmpArr.size(); i++) {
+					for(DBRecord insideRec : tmpArr.get(i)) {
+						if (tmpRec == insideRec) {
+							cntFound++;
+							break;
+						}
+					}
+				}
+				if (cntFound == tmpArr.size()-1) {
+					st.add(tmpRec);
+				}
+			}
+			return st.iterator();
+			
+			
+		}
 		//TODO write method body
 	}
 
