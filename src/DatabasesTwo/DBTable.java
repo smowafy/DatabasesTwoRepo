@@ -3,6 +3,8 @@ package DatabasesTwo;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import libs.BTree;
+
 
 public class DBTable {
 	public  String tableName;
@@ -13,12 +15,12 @@ public class DBTable {
 	//TODO initialize colList in the constructor
 	public  Hashtable<String, String>colNameType;
 	public  Hashtable<String, String>colNameRef;
-	public  Hashtable<String, BTree> colNameBTree;
+	public  Hashtable<String, BTree<String, DBRecord> > colNameBTree;
 
 	public DBTable(String strTableName, Hashtable<String,String> htblColNameType, Hashtable<String,String>htblColNameRefs, String strKeyColName) {
 		this.tableName = strTableName;
 		this.keyColName = strKeyColName;
-		this.htblColNameType = htblColNameType;
+		this.colNameType = htblColNameType;
 		this.colNameRef = htblColNameRefs;
 		this.pageCount = 1;
 		this.pageList.add(new Page(this.tableName));

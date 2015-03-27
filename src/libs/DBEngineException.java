@@ -1,27 +1,27 @@
-package DatabasesTwo;
+package libs;
 
-public class DBAppException extends Exception {
+public class DBEngineException extends Exception {
 
-	public DBAppException() {
+	public DBEngineException() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public DBAppException(String message) {
+	public DBEngineException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public DBAppException(Throwable cause) {
+	public DBEngineException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public DBAppException(String message, Throwable cause) {
+	public DBEngineException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public DBAppException(String message, Throwable cause,
+	public DBEngineException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 		// TODO Auto-generated constructor stub

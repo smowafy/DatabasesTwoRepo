@@ -1,3 +1,8 @@
+package libs;
+
+import java.util.ArrayList;
+
+
 /*
 EduDB is made available under the OSI-approved MIT license.
 
@@ -9,12 +14,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-package data_structures.BPlusTree;
 
-import operators.DBParameter;
-import operators.Operator;
 
-import java.util.ArrayList;
+
+
 
 /**
  * A B+ tree Since the structures and behaviors between internal node and external node are different,  so there are two different classes for each kind of node.

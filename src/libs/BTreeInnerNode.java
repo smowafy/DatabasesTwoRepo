@@ -9,10 +9,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-package data_structures.BPlusTree;
+package libs;
 
-import operators.DBCond;
-import operators.SelectColumns;
 
 import java.util.ArrayList;
 
@@ -269,7 +267,7 @@ class BTreeInnerNode<TKey extends Comparable<TKey>> extends BTreeNode<TKey> {
     public BTreeLeafNode getSmallest() {
         return this.getChild(0).getSmallest();
     }
-
+    /*
     @Override
     public String project(SelectColumns columns) {
         return null;
@@ -278,5 +276,5 @@ class BTreeInnerNode<TKey extends Comparable<TKey>> extends BTreeNode<TKey> {
     @Override
     public void filter(ArrayList<DBCond> conditions) {
 
-    }
+    }*/
 }

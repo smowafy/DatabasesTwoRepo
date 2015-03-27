@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -11,9 +12,11 @@ import java.util.StringTokenizer;
 import java.util.Set;
 import java.util.HashSet;
 
+import libs.*;
+
 public class DBApp {
 	final String COMMA = ",";
-	ArrayList<DBTable> tables = new ArrayList<DBTable>();
+	public ArrayList<DBTable> tables = new ArrayList<DBTable>();
 
 	public void init() {
 
@@ -59,6 +62,7 @@ public class DBApp {
 			if (indexed.equals("True")) {
 				// There exists an index for this column
 				(new File(tempFileName)).delete();
+				reader.close();
 				return;
 			}
 			String ref = tokenizer.nextToken();
@@ -74,14 +78,14 @@ public class DBApp {
 
 			//end of writing to metadata.CSV file
 			//beginning of creating the index and adding it to the table
-			BTree<String, DBRecord> idxBTree = new BTree();
-			DBTable targetTable;
+			BTree<String, DBRecord> idxBTree = new BTree<>();
+			DBTable targetTable = null;
 			//TODO add linear hashtable
 
 			for(DBTable tmpTable : tables) {
 				if (tmpTable.tableName.equals(strTableName)) {
 					targetTable = tmpTable;
-					tmpTable.colNameBTree.put(strColName, idxBtree);
+					tmpTable.colNameBTree.put(strColName, idxBTree);
 					//TODO add linear hashtable
 					break;
 				}
@@ -91,7 +95,7 @@ public class DBApp {
 			for(Page tmpPage : targetTable.pageList) {
 				for(int i = 0; i < tmpPage.recCount; i++) {
 					DBRecord tmpRecord = tmpPage.recordList.get(i);
-					idxBtree.insert(tmpRecord.recValue.get(strColName), tmpRecord);
+					idxBTree.insert(tmpRecord.recValue.get(strColName), tmpRecord);
 				}
 			}
 			//End of inserting into B+ Tree
@@ -110,9 +114,12 @@ public class DBApp {
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
 		
 		//Begin inserting new record into the table
-		DBTable targetTable;
-		for(targetTable : tables) {
-			if (targetTable.tableName.equals(strTableName)) break;
+		DBTable targetTable = null;
+		for(DBTable tmpTable : tables) {
+			if (tmpTable.tableName.equals(strTableName)) {
+				targetTable = tmpTable;
+				break;
+			}
 		}
 		DBRecord toBeAddedRecord = new DBRecord(htblColNameValue);
 		Page lastPage = targetTable.pageList.get(targetTable.pageList.size() - 1);
@@ -157,13 +164,16 @@ public class DBApp {
 			Hashtable<String, String> htblColNameRange, String strOperator)
 			throws DBEngineException {
 		//fetching table reference
-		DBTable targetTable;		
-		for(targetTable : tables) {
-			if (targetTable.tableName.equals(strTable)) break;
+		DBTable targetTable = null;		
+		for(DBTable tmpTable : tables) {
+			if (tmpTable.tableName.equals(strTable)) {
+				targetTable = tmpTable;
+				break;
+			}
 		}
 
 		//Begin collecting each query result separately before using the operator
-		ArrayList<HashSet<DBRecord> > queryList = new ArrayList<HashSet>();
+		ArrayList<HashSet<DBRecord> > queryList = new ArrayList<HashSet<DBRecord> >();
 		Set<String> keys = htblColNameRange.keySet();
 		StringTokenizer strTok;
 		for(String colName:keys) {
@@ -171,18 +181,16 @@ public class DBApp {
 			strTok = new StringTokenizer(queryRange, COMMA);
 			String rangeStart = strTok.nextToken();
 			String rangeEnd = strTok.nextToken();
-			BTree tmpIdx = targetTable.colNameBTree.get(colName);
+			BTree<String, DBRecord> tmpIdx = targetTable.colNameBTree.get(colName);
 			DBRecord queryResultRecord;
 			if (tmpIdx != null) {
-				queryResultRecord = tmpIdx.search(rangeStart);
+				queryResultRecord = (DBRecord) tmpIdx.search(rangeStart);
 			} else {
 				queryResultRecord = linearSearch(targetTable, colName, rangeStart);
 			}
 			HashSet<DBRecord> tmpRecordHashSet = new HashSet<DBRecord>();
-			//! --
-				tmpRecordHashSet.insert(queryResultRecord);
-			// --!
-				queryList.add(tmpRecordHashSet);
+			tmpRecordHashSet.add(queryResultRecord);
+			queryList.add(tmpRecordHashSet);
 		}
 		return evaluateQueryWithOperator(queryList, strOperator);
 
@@ -235,6 +243,7 @@ public class DBApp {
 				if (record.recValue.get(colName).equals(colValue)) return record;
 			}
 		}
+		return null;
 	}
 
 	public Iterator evaluateQueryWithOperator(ArrayList<HashSet<DBRecord> > arr, String operator) {

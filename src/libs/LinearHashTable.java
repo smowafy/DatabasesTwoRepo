@@ -9,7 +9,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-package data_structures.linearHashTable;
+package libs;
 
 import dataTypes.DataType;
 

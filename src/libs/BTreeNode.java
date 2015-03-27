@@ -9,10 +9,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-package data_structures.BPlusTree;
+package libs;
 
-import operators.DBCond;
-import operators.SelectColumns;
+
 
 import java.util.ArrayList;
 
@@ -208,8 +207,8 @@ abstract class BTreeNode<TKey extends Comparable<TKey>> {
      */
     public abstract BTreeLeafNode getSmallest();
 
-    public abstract String project(SelectColumns columns);
+   // public abstract String project(SelectColumns columns);
 
 
-    public abstract void filter(ArrayList<DBCond> conditions);
+    //public abstract void filter(ArrayList<DBCond> conditions);
 }

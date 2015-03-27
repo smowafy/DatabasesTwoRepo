@@ -9,11 +9,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-package data_structures.BPlusTree;
+package libs;
+
+import java.util.Hashtable;
+
+import DatabasesTwo.DBRecord;
 
 public class BTreeTest {
 	public static void main(String args[]){
-		IntegerBTree tree = new IntegerBTree();
+		/*IntegerBTree tree = new IntegerBTree();
 
 		tree.insert(10);
 		tree.insert(48);
@@ -56,7 +60,23 @@ public class BTreeTest {
 		tree.print();
         //DBBTreeIterator iterator = new DBBTreeIterator(tree);
         //iterator.print();
-		return;
+		return;*/
+		BTree<String, DBRecord> idxName = new BTree<>();
+		Hashtable<String, String> attrs = new Hashtable<>();
+		attrs.put("name", "sherif");
+		attrs.put("age", "16");
+		DBRecord rec1 = new DBRecord(attrs);
+		attrs = new Hashtable<>();
+		attrs.put("name", "hello");
+		attrs.put("age", "9");
+		DBRecord rec2 = new DBRecord(attrs);
+		idxName.insert("sherif", rec1);
+		idxName.insert("hello", rec2);
+		DBRecord result = idxName.search("sherif");
+		System.out.println(result.toString());
+		rec1.recValue.put("gender", "male");
+		System.out.println(result.toString());
+		
 	}
 }
 

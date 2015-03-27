@@ -9,11 +9,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-package data_structures.BPlusTree;
+package libs;
 
-import DBStructure.DBRecord;
-import operators.DBCond;
-import operators.SelectColumns;
+
 
 import java.util.ArrayList;
 
@@ -213,7 +211,7 @@ class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKe
         return this;
     }
 
-    @Override
+    /*@Override
     public String project(SelectColumns columns) {
         String out = "";
         for (int index = 0; index < this.getKeyCount(); ++index) {
@@ -249,5 +247,5 @@ class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKe
                 }
             }
         }
-    }
+    }*/
 }
