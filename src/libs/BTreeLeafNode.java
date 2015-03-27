@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * @author  mohamed
  */
-class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKey> {
+public class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKey> {
 	protected final static int LEAFORDER = 4;
 	/**
      * @uml.property  name="values"
