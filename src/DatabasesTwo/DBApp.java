@@ -52,7 +52,7 @@ public class DBApp {
 			String colName = tokenizer.nextToken();
 			while (!tableName.equals(strTableName)
 					|| !colName.equals(strColName)) {
-				temp.append(currentLine);
+				temp.append(currentLine + "\n");
 				currentLine = reader.readLine();
 				tokenizer = new StringTokenizer(currentLine, COMMA);
 				tableName = tokenizer.nextToken();
@@ -73,14 +73,17 @@ public class DBApp {
 			while ((currentLine = reader.readLine()) != null
 					&& !currentLine.equals(""))
 				temp.append(currentLine);
+			temp.flush();
+			temp.close();
 			File oldFile = new File(oldFileName);
 			(new File(oldFileName)).delete();
 			File newFile = new File(tempFileName);
 			newFile.renameTo(oldFile);
+			
 
 			//end of writing to metadata.CSV file
 			//beginning of creating the index and adding it to the table
-			BTree<String, DBRecord> idxBTree = new BTree<>();
+			BTree<String, DBRecord> idxBTree = new BTree<String, DBRecord>();
 			DBTable targetTable = null;
 			//TODO add linear hashtable
 
@@ -141,6 +144,7 @@ public class DBApp {
 		for(String key : keys) {
 			tmpIdx = targetTable.colNameBTree.get(key);
 			if (tmpIdx != null) {
+				//System.err.println(htblColNameValue.get(key) + " " + toBeAddedRecord);
 				tmpIdx.insert(htblColNameValue.get(key), toBeAddedRecord);
 			}
 		}
@@ -173,6 +177,7 @@ public class DBApp {
 				break;
 			}
 		}
+		
 
 		//Begin collecting each query result separately before using the operator
 		ArrayList<Iterator> queryList = new ArrayList<Iterator>();
@@ -205,7 +210,7 @@ public class DBApp {
 			Hashtable<String, String> htblColNameRefs, String strKeyColName) {
 
 		FileWriter writer = null;
-		ArrayList<String> colNames = (ArrayList<String>) htblColNameType.keys();
+		Set<String> colNames = htblColNameType.keySet();
 
 		try {
 			writer = new FileWriter("metadata.csv");
@@ -214,7 +219,7 @@ public class DBApp {
 				writer.append(colName + COMMA);
 				writer.append(htblColNameType.get(colName) + COMMA);
 				if (colName.equals(strKeyColName))
-					writer.append("True" + COMMA + "True" + COMMA);
+					writer.append("True" + COMMA + "False" + COMMA);
 				else
 					writer.append("False" + COMMA + "False" + COMMA);
 				writer.append(htblColNameRefs.get(colName) + '\n');

@@ -73,6 +73,7 @@ public class BTree<TKey extends Comparable<TKey>, TValue> {
 	
 	public Iterator searchRange(TKey start, TKey end) {
 		BTreeLeafNode<String, DBRecord> startNode = (BTreeLeafNode<String, DBRecord>) searchNode(start);
+		//System.out.println(startNode.toString());
 		DBIterator it = new DBIterator((String)start, (String)end, startNode);
 		return it;
 	}

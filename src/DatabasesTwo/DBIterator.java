@@ -15,6 +15,12 @@ public class DBIterator implements ListIterator{
 		this.end = end;
 		this.cur = startNode;
 		idx = cur.search(start);
+		if (idx == -1) {
+			for(idx = 0; idx < cur.getKeyCount(); idx++) {
+				if (cur.getKey(idx).compareTo(start) >= 0) break;
+			}
+		}
+		
 	}
 	
 	@Override
@@ -25,7 +31,7 @@ public class DBIterator implements ListIterator{
 
 	@Override
 	public boolean hasNext() {
-		return cur == null;
+		return (cur != null);
 	}
 
 	@Override
@@ -41,6 +47,10 @@ public class DBIterator implements ListIterator{
 		if (tmp != null) result = tmp.getValue(idx);
 		if (idx == cur.getKeyCount()-1) {
 			BTreeLeafNode<String, DBRecord> nxt = (BTreeLeafNode<String, DBRecord>) cur.getNextNodeforDB();
+			if (nxt == null) {
+				cur = null;
+				return result;
+			}
 			if (nxt.getKey(0).compareTo(end) <= 0) {
 				cur = nxt;
 				idx = 0;
